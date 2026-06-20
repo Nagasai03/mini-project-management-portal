@@ -49,7 +49,6 @@ const AddTaskPage = () => {
         description: description.trim(),
         status
       });
-      // Redirect to dashboard on success
       navigate('/');
     } catch (err) {
       console.error('Error creating task:', err);
@@ -62,147 +61,144 @@ const AddTaskPage = () => {
   };
 
   return (
-    <div className="container" style={{ paddingTop: '40px', paddingBottom: '60px' }}>
+    <div style={{ width: '100%', maxWidth: '800px', margin: '0 auto' }}>
       
-      {/* Back to Dashboard Link */}
+      {/* Back to Dashboard */}
       <button 
         onClick={() => navigate('/')} 
         className="btn btn-secondary btn-sm"
-        style={{ marginBottom: '24px' }}
+        style={{ marginBottom: '32px', display: 'flex', gap: '8px' }}
       >
         <ArrowLeft size={14} />
-        <span>Back to Dashboard</span>
+        <span>Back to Workspace</span>
       </button>
 
       {/* Form Container */}
-      <div style={{ display: 'flex', justifyContent: 'center' }}>
-        <div className="card" style={{ width: '100%', maxWidth: '640px', padding: '36px' }}>
+      <div className="card glass-panel" style={{ padding: '36px', borderWidth: '1px' }}>
+        
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '32px' }}>
+          <PlusCircle size={28} style={{ color: 'var(--primary)' }} />
+          <h1 style={{ fontSize: '26px', fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.5px' }}>Create New Task</h1>
+        </div>
+
+        {apiError && (
+          <div 
+            style={{ 
+              backgroundColor: 'var(--danger-bg)', 
+              color: 'var(--danger)', 
+              padding: '12px 16px', 
+              borderRadius: 'var(--radius-md)', 
+              fontSize: '14px', 
+              marginBottom: '24px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              fontWeight: 500,
+              border: '1px solid rgba(220, 38, 38, 0.1)'
+            }}
+          >
+            <AlertCircle size={16} />
+            {apiError}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit}>
           
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
-            <PlusCircle size={28} style={{ color: 'var(--primary)' }} />
-            <h1 style={{ fontSize: '24px', fontWeight: 700, color: 'var(--text-primary)' }}>Create New Task</h1>
+          {/* Title Field */}
+          <div className="form-group">
+            <label className="form-label" htmlFor="title">Task Title <span style={{ color: 'var(--danger)' }}>*</span></label>
+            <input
+              type="text"
+              id="title"
+              placeholder="e.g. Implement user authentication workflow"
+              value={title}
+              onChange={(e) => {
+                setTitle(e.target.value);
+                if (errors.title) setErrors((prev) => ({ ...prev, title: '' }));
+              }}
+              className="form-control"
+              style={{ 
+                width: '100%',
+                borderColor: errors.title ? 'var(--danger)' : undefined
+              }}
+              required
+            />
+            {errors.title && <div className="form-error">{errors.title}</div>}
           </div>
 
-          {/* API error alert */}
-          {apiError && (
-            <div 
-              style={{ 
-                backgroundColor: 'var(--danger-bg)', 
-                color: 'var(--danger-color)', 
-                padding: '12px 16px', 
-                borderRadius: 'var(--radius-md)', 
-                fontSize: '14px', 
-                marginBottom: '20px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                fontWeight: 500
+          {/* Description Field */}
+          <div className="form-group">
+            <label className="form-label" htmlFor="description">Description <span style={{ color: 'var(--danger)' }}>*</span></label>
+            <textarea
+              id="description"
+              placeholder="Describe the goals, deliverables, and guidelines for this task (minimum 20 characters)..."
+              rows="6"
+              value={description}
+              onChange={(e) => {
+                setDescription(e.target.value);
+                if (errors.description) setErrors((prev) => ({ ...prev, description: '' }));
               }}
+              className="form-control"
+              style={{ 
+                width: '100%', 
+                resize: 'vertical',
+                borderColor: errors.description ? 'var(--danger)' : undefined
+              }}
+              required
+            />
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '6px' }}>
+              <span className="form-error">{errors.description}</span>
+              <span style={{ fontSize: '11px', fontWeight: 600, color: description.length < 20 ? 'var(--danger)' : 'var(--text-muted)' }}>
+                {description.length} / 20 characters
+              </span>
+            </div>
+          </div>
+
+          {/* Status Field */}
+          <div className="form-group">
+            <label className="form-label" htmlFor="status">Initial Status</label>
+            <select
+              id="status"
+              value={status}
+              onChange={(e) => setStatus(e.target.value)}
+              className="form-control"
+              style={{ width: '100%' }}
             >
-              <AlertCircle size={16} />
-              {apiError}
-            </div>
-          )}
+              <option value="Pending">Pending</option>
+              <option value="In Progress">In Progress</option>
+            </select>
+          </div>
 
-          <form onSubmit={handleSubmit}>
+          {/* Actions */}
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'flex-end', 
+            gap: '12px', 
+            borderTop: '1px solid var(--panel-border)',
+            paddingTop: '24px',
+            marginTop: '20px'
+          }}>
+            <button 
+              type="button" 
+              onClick={() => navigate('/')} 
+              className="btn btn-secondary"
+              disabled={loading}
+            >
+              Cancel
+            </button>
             
-            {/* Title Field */}
-            <div className="form-group">
-              <label className="form-label" htmlFor="title">Task Title <span style={{ color: 'var(--danger-color)' }}>*</span></label>
-              <input
-                type="text"
-                id="title"
-                placeholder="e.g. Build Login Page"
-                value={title}
-                onChange={(e) => {
-                  setTitle(e.target.value);
-                  if (errors.title) setErrors((prev) => ({ ...prev, title: '' }));
-                }}
-                className={`form-control ${errors.title ? 'is-invalid' : ''}`}
-                style={{ 
-                  width: '100%',
-                  borderColor: errors.title ? 'var(--danger-color)' : undefined
-                }}
-                required
-              />
-              {errors.title && <div className="form-error">{errors.title}</div>}
-            </div>
+            <button 
+              type="submit" 
+              className="btn btn-primary"
+              disabled={loading}
+            >
+              {loading ? 'Creating...' : 'Create Task'}
+            </button>
+          </div>
 
-            {/* Description Field */}
-            <div className="form-group">
-              <label className="form-label" htmlFor="description">Description <span style={{ color: 'var(--danger-color)' }}>*</span></label>
-              <textarea
-                id="description"
-                placeholder="Provide a detailed description of the task (minimum 20 characters)..."
-                rows="6"
-                value={description}
-                onChange={(e) => {
-                  setDescription(e.target.value);
-                  if (errors.description) setErrors((prev) => ({ ...prev, description: '' }));
-                }}
-                className="form-control"
-                style={{ 
-                  width: '100%', 
-                  resize: 'vertical',
-                  borderColor: errors.description ? 'var(--danger-color)' : undefined
-                }}
-                required
-              />
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '6px' }}>
-                <span className="form-error">{errors.description}</span>
-                <span style={{ fontSize: '11px', color: description.length < 20 ? 'var(--danger-color)' : 'var(--text-muted)' }}>
-                  {description.length} / 20 chars min
-                </span>
-              </div>
-            </div>
+        </form>
 
-            {/* Status Field */}
-            <div className="form-group">
-              <label className="form-label" htmlFor="status">Initial Status</label>
-              <select
-                id="status"
-                value={status}
-                onChange={(e) => setStatus(e.target.value)}
-                className="form-control"
-                style={{ width: '100%' }}
-              >
-                <option value="Pending">Pending</option>
-                <option value="In Progress">In Progress</option>
-              </select>
-            </div>
-
-            {/* Form actions */}
-            <div style={{ 
-              display: 'flex', 
-              justifyContent: 'flex-end', 
-              gap: '12px', 
-              borderTop: '1px solid var(--panel-border)',
-              paddingTop: '24px',
-              marginTop: '12px'
-            }}>
-              <button 
-                type="button" 
-                onClick={() => navigate('/')} 
-                className="btn btn-secondary"
-                disabled={loading}
-              >
-                Cancel
-              </button>
-              
-              <button 
-                type="submit" 
-                className="btn btn-primary"
-                disabled={loading}
-              >
-                {loading ? 'Creating...' : 'Create Task'}
-              </button>
-            </div>
-
-          </form>
-
-        </div>
       </div>
-
     </div>
   );
 };

@@ -16,10 +16,12 @@ const ProtectedRoute = ({ children }) => {
   }
   
   return (
-    <>
+    <div className="app-layout">
       <Navbar />
-      {children}
-    </>
+      <main className="main-content">
+        {children}
+      </main>
+    </div>
   );
 };
 
